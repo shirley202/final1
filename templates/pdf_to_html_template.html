@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ nombre_archivo }}</title>
+    <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+    <script src="{% static 'js/pagedjs_custom.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        /* Estilos adicionales personalizados */
+        .sheet-container {
+            margin: 20px;
+        }
+
+        .content {
+            margin-bottom: 40px;
+        }
+
+        .page {
+            page-break-inside: avoid;
+        }
+
+        .identification-table {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        /* Estilo para los dos puntos */
+        .table-label::after {
+            content: ":";
+            display: inline-block;
+            margin-right: 10px; /* Ajusta el espacio entre los dos puntos y el contenido */
+        }
+
+        /* Estilo para el contenido después de los dos puntos */
+        .table-label {
+            font-weight: normal; /* Evitar negrita */
+            vertical-align: top;
+            white-space: nowrap; /* Evitar que se rompa el texto */
+            padding-right: 10px;
+            width: 50%; /* Ajusta el ancho de la columna de la etiqueta */
+        }
+
+        .table-content {
+            vertical-align: top;
+            width: 50%;
+        }
+
+        /* Centrando el texto del encabezado */
+        .header, .header2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header2 .left-span, .header2 .right-span {
+            display: inline-block;
+            width: 49%;
+        }
+
+        .header2 .right-span {
+            text-align: right;
+        }
+        .firmas {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 70px; /* Espacio entre el contenido y las firmas */
+        }
+
+        .firmas .firma-box {
+            display: inline-block;
+            width: 45%; /* Ajusta el ancho de cada firma */
+            margin-bottom: 100px; /* Espacio entre cada firma */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Contenedor de la hoja -->
+    <div class="sheet-container">
+        <!-- Contenido -->
+        {% for identificacion_data in identificaciones %}
+        <div class="content">
+            <!-- Encabezado común -->
+            <div class="header">
+                <p>
+                    UNIVERSIDAD NACIONAL DE CAAGUAZU<br>
+                    Con sede en Coronel Oviedo<br>
+                    <b>FACULTAD DE CIENCIAS Y TECNOLOGÍAS</b><br>
+                    CARRERA DE INGENIERIA EN {{ carrera_nombre|upper }}<br>
+                    PLAN CURRICULAR {{ plan_curricular }}<br>
+                    <b>PROGRAMA DE ESTUDIOS</b>
+                </p>
+            </div>
+
+            <div class="header2">
+                <p>
+                    <span class="left-span">Carrera de Ingenieria en {{ carrera_nombre }}</span>
+                    <span class="right-span">Facultad de Ciencias Tecnológicas – UNC@</span>
+                </p>
+            </div>
+
+            <!-- Contenido de la página 1 -->
+            <div class="page">
+                <h2>I. IDENTIFICACIÓN.</h2>
+                <div class="identification-table">
+                    <table>
+                        <tr>
+                            <td class="table-label">A. Nombre de la Materia</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.materia }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">B. Código</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.codigo }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">C. Condición</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.condicion }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">D. Carrera</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.carrera }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">E. Curso</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.curso }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">F. Semestre</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.semestre }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">G. Requisitos</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.requisitos }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">H. Carga horaria semanal</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.cargaSemanal }}</td>
+                        </tr>
+                        <tr>
+                            <td class="table-label">I. Carga horaria semestral</td>
+                            <td class="table-content">{{ identificacion_data.identificacion.cargaSemestral }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                {% for seccion_titulo, seccion_contenido in identificacion_data.secciones.items %}
+                <h2>{{ seccion_titulo }}</h2>
+                <p>{{ seccion_contenido|safe }}</p>
+
+                {% if forloop.last %}
+                     <div class="firmas">
+                    <div class="firma-box">
+                        <p>Firma del Secretario General</p>
+                        <p>Facultad de Ciencias y Tecnologías<br>Universidad Nacional de Caaguazú</p>
+                    </div>
+                    <div class="firma-box">
+                        <p>Firma del Decano</p>
+                        <p>Facultad de Ciencias y Tecnologías<br>Universidad Nacional de Caaguazú</p>
+                    </div>
+                </div>
+                <!-- Salto de página después del último ciclo -->
+                <div class="page-break"></div>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

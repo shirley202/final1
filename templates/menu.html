@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0R7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        select, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .semestre-title {
+            background-color: #f9f9f9;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .semestre-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .checkbox-container input {
+            text-align: right;
+        }
+
+        .semestre-container td:first-child {
+            font-weight: bold;
+            color: black;
+        }
+
+        /* Centrando el texto del encabezado */
+        h1, h3 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Facultad de Ciencias y Tecnologías</h1>
+<h3>Selecciona una Carrera :</h3>
+<form id="pdfForm" method="GET" action="{% url 'pdf_to_html' %}">
+    <select id="cboCarrera" name="idCarrera" title="Selecciona una carrera">
+        <option value="" disabled selected>Selecciona una carrera</option>
+        <option value="Informatica">Informatica</option>
+        <option value="Civil">Civil</option>
+        <option value="Electricidad">Electricidad</option>
+        <option value="Electronica">Electronica</option>
+    </select>
+
+    <table id="pdf_table">
+        <tbody id="checkboxContainer">
+            <!-- Checkboxes will be inserted here -->
+        </tbody>
+    </table>
+    <br>
+    <button type="submit" id="filtrarBtn">Seleccionar</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    const listarMaterias = async (codcarrera) => {
+        if (!codcarrera) return; // No hacer nada si no hay carrera seleccionada
+
+        try {
+            const response = await fetch(`./materiasf/${codcarrera}`);
+            const data = await response.json();
+            checkboxContainer.innerHTML = "";
+            if (data.message === "Success") {
+                const cursos = [
+                    { curso: "Primero", semestres: ["Primero", "Segundo"] },
+                    { curso: "Segundo", semestres: ["Primero", "Segundo"] },
+                    { curso: "Tercero", semestres: ["Primero", "Segundo"] },
+                    { curso: "Cuarto", semestres: ["Primero", "Segundo"] },
+                    { curso: "Quinto", semestres: ["Primero", "Segundo"] }
+                ];
+
+                cursos.forEach(curso => {
+                    const tr = document.createElement('tr');
+
+                    curso.semestres.forEach(semestre => {
+                        const materiasSemestre = data.materias.filter(materia => materia.curso === curso.curso && materia.semestre === semestre);
+                        let checkboxes = '';
+                        materiasSemestre.forEach(materia => {
+                            checkboxes += `
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="materia${materia.id}" name="pdf_id" value="${materia.id}">
+                                    <label class="form-check-label" for="materia${materia.id}">${materia.codigo} - ${materia.materia}</label>
+                                </div>`;
+                        });
+
+                        const td = document.createElement('td');
+                        td.className = "semestre-container";
+                        td.innerHTML = `<span class="semestre-title">${curso.curso} Curso - ${semestre} Semestre</span>` + checkboxes;
+                        tr.appendChild(td);
+                    });
+
+                    checkboxContainer.appendChild(tr);
+                });
+            } else {
+                checkboxContainer.innerHTML = "<tr><td colspan='5'>Materias no encontradas...</td></tr>";
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const cargaInicial = () => {
+        cboCarrera.addEventListener("change", (event) => {
+            listarMaterias(event.target.value);
+        });
+    };
+
+    window.addEventListener("load", async () => {
+        await cargaInicial();
+    });
+</script>
+
+</body>
+</html>
