@@ -90,10 +90,16 @@
 </head>
 <body>
 
-<h1>Facultad de Ciencias y Tecnologías</h1>
+<h1>Sistema de Foliación de Programas de Estudio</h1>
 <h3>Selecciona una Carrera :</h3>
 <form id="pdfForm" method="GET" action="{% url 'pdf_to_html' %}">
+     <input type="text" id="nombreDocente" name="nombre_docente" placeholder="Nombre del Decano" required>
+    <input type="text" id="nombreAlumno" name="nombre_alumno" placeholder="Nombre del Alumno" required>
+    <input type="text" id="ciAlumno" name="ci_alumno" placeholder="Cédula de Identidad del Alumno" required>
+    <input type="text" id="fecha" name="fecha" placeholder="Fecha en letra" required>
+
     <select id="cboCarrera" name="idCarrera" title="Selecciona una carrera">
+
         <option value="" disabled selected>Selecciona una carrera</option>
         <option value="Informatica">Informatica</option>
         <option value="Civil">Civil</option>
@@ -150,6 +156,10 @@
 
                     checkboxContainer.appendChild(tr);
                 });
+                document.getElementById('nombreDocente').value = ''; // Puedes asignar el valor adecuado aquí
+            document.getElementById('nombreAlumno').value = ''; // Puedes asignar el valor adecuado aquí
+            document.getElementById('ciAlumno').value = ''; // Puedes asignar el valor adecuado aquí
+
             } else {
                 checkboxContainer.innerHTML = "<tr><td colspan='5'>Materias no encontradas...</td></tr>";
             }

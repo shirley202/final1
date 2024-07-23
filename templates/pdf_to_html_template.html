@@ -25,9 +25,15 @@
         .identification-table {
             margin-top: 20px;
         }
+        .constancia p {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            line-height: 1.6;
+        }
 
         table {
             width: 100%;
+            border-collapse: collapse; /* Para asegurar que los bordes se vean bien */
         }
 
         /* Estilo para los dos puntos */
@@ -65,18 +71,70 @@
         .header2 .right-span {
             text-align: right;
         }
+
         .firmas {
             text-align: center;
             font-size: 12px;
-            margin-top: 70px; /* Espacio entre el contenido y las firmas */
+            margin-top: 100px; /* Espacio entre el contenido y las firmas */
         }
 
         .firmas .firma-box {
             display: inline-block;
             width: 45%; /* Ajusta el ancho de cada firma */
-            margin-bottom: 100px; /* Espacio entre cada firma */
+            margin-bottom: 20px; /* Espacio entre cada firma */
+        }
+        .constancia strong {
+            font-weight: bold;
+        }
+        .constancia .materias-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
+        /* Estilos para la constancia */
+        .constancia-container {
+            page-break-before: always; /* Inicia la constancia en una nueva página */
+            margin-top: 50px;
+            padding: 20px;
+            border: 0px solid #ccc;
+            break-after: avoid; /* Evita que haya salto de página después de la constancia */
+        }
+        .constancia-container h2 {
+    text-align: center;
+    text-decoration: underline;
+    margin-bottom: 20px; /* Ajusta el espacio debajo del título si es necesario */
+}
+
+        .constancia {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Estilo para el título de la constancia */
+        .constancia h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Estilo del encabezado */
+        .constancia-header, .header {
+            background-color: #e0e0e0;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        /* Estilos para asegurar que no haya paginación en la constancia */
+        @page {
+            size: auto; /* Establece el tamaño de página automático */
+            margin: 20mm; /* Márgenes de página */
+        }
+
+        .sheet-container {
+            page: sheet;
+        }
     </style>
 </head>
 <body>
@@ -151,26 +209,87 @@
                 {% for seccion_titulo, seccion_contenido in identificacion_data.secciones.items %}
                 <h2>{{ seccion_titulo }}</h2>
                 <p>{{ seccion_contenido|safe }}</p>
-
-                {% if forloop.last %}
-                     <div class="firmas">
-                    <div class="firma-box">
-                        <p>Firma del Secretario General</p>
-                        <p>Facultad de Ciencias y Tecnologías<br>Universidad Nacional de Caaguazú</p>
-                    </div>
-                    <div class="firma-box">
-                        <p>Firma del Decano</p>
-                        <p>Facultad de Ciencias y Tecnologías<br>Universidad Nacional de Caaguazú</p>
-                    </div>
-                </div>
-                <!-- Salto de página después del último ciclo -->
-                <div class="page-break"></div>
-                {% endif %}
                 {% endfor %}
             </div>
 
+            <!-- Firmas en cada página -->
+            <div class="firmas">
+                <div class="firma-box">
+                    <p>Secretaria General</p>
+                    <p>Facultad de Ciencias y Tecnologías<br>Universidad Nacional de Caaguazú</p>
+                </div>
+                <div class="firma-box">
+                    <p>Decano</p>
+                    <p>Facultad de Ciencias y Tecnologías<br>Universidad Nacional de Caaguazú</p>
+                </div>
+            </div>
         </div>
         {% endfor %}
+
+        <!-- Sección de Constancia al final del documento -->
+        <div class="constancia-container">
+            <!-- Encabezado de la constancia -->
+
+    <h2>CONSTANCIA</h2>
+
+            <!-- Contenido de la constancia -->
+            <div class="constancia">
+                <p><strong>El Decano de la Facultad de Ciencias y Tecnologías, {{ nombre_docente }}, HACE CONSTAR QUE:</strong></p>
+                <p>Las hojas autenticadas de los programas de estudios que acompañan al presente documento forman parte del Plan de Estudios de la Carrera de {{ carrera_nombre }}, dictada en esta Unidad Académica y son los que se detallan a continuación:</p>
+                {% for curso, semestres in cursos_por_semestre.items %}
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th colspan="3" style="text-align: center;">Curso {{ curso }}</th>
+                        </tr>
+                        <tr>
+                            <th>PRIMER SEMESTRE</th>
+                            <th>SEGUNDO SEMESTRE</th>
+                        </tr>
+                    <tr>
+                            <th>Materias</th>
+                            <th>Materias</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul style="list-style-type: none; padding-left: 0;">
+
+                                    {% if "Primero" in semestres %}
+
+                                        {% for materia in semestres.Primero %}
+                                            <li>{{ materia }}</li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li>No hay materias</li>
+                                    {% endif %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul style="list-style-type: none; padding-left: 0;">
+                                    {% if "Segundo" in semestres %}
+                                        {% for materia in semestres.Segundo %}
+                                            <li>{{ materia }}</li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li>No hay materias</li>
+                                    {% endif %}
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% endfor %}
+                <p><strong>Observación:</strong> Las copias mencionadas más arriba se componen de  fojas, autenticadas por Secretaría General de la Facultad.</p>
+                <p>Se expide la presente constancia a pedido de <strong>{{ nombre_alumno }}</strong> con C.I.N° <strong>{{ ci_alumno }}</strong>, para los fines que hubiere lugar en la ciudad de Coronel Oviedo, República del Paraguay, a los {{ fecha }}.</p>
+
+
+             <p style="text-align: center; margin-top: 70px;"><strong>{{ nombre_docente }}</strong></p>
+        <p style="text-align: center;"><strong>Decano.</strong></p>
+            </div>
+        </div>
     </div>
 
 </body>

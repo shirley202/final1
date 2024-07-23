@@ -1,5 +1,15 @@
     /* Estilos generales */
-
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f8f9fa;
+    }
 
     /* Estilos generales */
 body {
@@ -124,13 +134,14 @@ a:hover {
     /* Estilos para la paginación */
 
     .pagedjs_margin-bottom::after {
-        content: "Página " counter(page);
-        position: absolute;
-        color: #000;
-        font-size: 12px;
-        text-align: center;
-        width: 76%;
-    }
+    content: "Página " counter(page);
+    position: absolute;
+    color: #000;
+    font-size: 12px;
+    text-align: right; /* Alinea el número de página a la derecha */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    right:85px; /* Coloca el número de página 20px desde el borde derecho */
+}
 
 
     /* Estilos para el contenedor de la paginación */

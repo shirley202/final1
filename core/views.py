@@ -70,6 +70,10 @@ from .models import PDF, Carrera
 def pdf_to_html(request):
     pdf_ids = request.GET.getlist('pdf_id')
     selected_carrera_nombre = request.GET.get('idCarrera', '').strip()
+    nombre_alumno = request.GET.get('nombre_alumno', 'Nombre del alumno no disponible')
+    nombre_docente = request.GET.get('nombre_docente', 'Nombre del docente no proporcionado')
+    ci_alumno = request.GET.get('ci_alumno', '')
+    fecha = request.GET.get('fecha', '')
 
     if selected_carrera_nombre:
         try:
@@ -77,17 +81,14 @@ def pdf_to_html(request):
             pdfs = PDF.objects.filter(id_carrera=selected_carrera)
             carrera_nombre = selected_carrera.nombre
             plan_curricular = '2010'  # Valor predeterminado
-
-            # Ajusta el año del plan curricular según la carrera
             if 'civil' in carrera_nombre.lower():
                 plan_curricular = '2013'
-            # Agrega más condiciones si es necesario
         except Carrera.DoesNotExist:
             return HttpResponse("Carrera no encontrada.", status=404)
     else:
         pdfs = PDF.objects.none()
         carrera_nombre = "Desconocida"
-        plan_curricular = "Desconocido"  # Valor predeterminado para casos sin carrera
+        plan_curricular = "Desconocido"
 
     if pdf_ids:
         identificaciones = []
@@ -119,11 +120,32 @@ def pdf_to_html(request):
                 pass
 
         identificaciones.sort(key=lambda x: x['identificacion']['codigo'])
+
         if identificaciones:
+            cursos_por_semestre = {}
+            for identificacion_data in identificaciones:
+                curso = identificacion_data['identificacion']['curso']
+                semestre = identificacion_data['identificacion']['semestre']
+                materia = identificacion_data['identificacion']['materia']
+
+                if curso not in cursos_por_semestre:
+                    cursos_por_semestre[curso] = {'Primero': [], 'Segundo': []}
+
+                if semestre == "Primero":
+                    cursos_por_semestre[curso]['Primero'].append(materia)
+                elif semestre == "Segundo":
+                    cursos_por_semestre[curso]['Segundo'].append(materia)
+
             context = {
                 'identificaciones': identificaciones,
                 'carrera_nombre': carrera_nombre,
-                'plan_curricular': plan_curricular
+                'plan_curricular': plan_curricular,
+                'nombre_alumno': nombre_alumno,
+                'nombre_docente': nombre_docente,
+                'ci_alumno': ci_alumno,
+                'fecha': fecha,
+
+                'cursos_por_semestre': cursos_por_semestre,
             }
             html_content = render_to_string('pdf_to_html_template.html', context)
             return HttpResponse(html_content)
@@ -131,7 +153,6 @@ def pdf_to_html(request):
             return HttpResponse("No se encontraron PDFs con las IDs proporcionadas.")
     else:
         return HttpResponse("No se proporcionaron IDs de PDF.")
-
 
 def eliminar_encabezados_pies_pagina(page):
     # Obtener el tamaño de la página
@@ -343,3 +364,18 @@ def menu2(request):
     return render(request, 'menu2.html', )
 
 
+def captura_parametros(request):
+    if request.method == 'POST':
+        nombre_decano = request.POST.get('nombre_decano')
+        nombre_alumno = request.POST.get('nombre_alumno')
+        ci_alumno = request.POST.get('ci_alumno')
+
+        # Almacenar estos datos en la sesión si es necesario
+        request.session['nombre_decano'] = nombre_decano
+        request.session['nombre_alumno'] = nombre_alumno  # Corregido aquí
+        request.session['ci_alumno'] = ci_alumno
+
+        # Redirigir al usuario a la página de selección de programas
+        return redirect('pdf_to_html')
+
+    return render(request, 'parametros.html')

@@ -9,4 +9,5 @@ urlpatterns = [
     path('materiasf/<str:codcarrera>', views.get_materiasf, name='get_materiasf'),
     path('menu', views.menu, name='menu'),
 path('menu2', views.menu2, name='menu2'),
+path('parametros', views.captura_parametros, name='captura_parametros'),
 ]

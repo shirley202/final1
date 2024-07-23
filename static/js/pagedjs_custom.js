@@ -46,4 +46,5 @@ class MyHandler extends Paged.Handler {
     }
 }
 
+
 Paged.registerHandlers(MyHandler);
