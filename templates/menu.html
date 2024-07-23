@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0R7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,7 +23,7 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
-        select, button {
+        select, button, input[type="text"] {
             padding: 10px;
             margin: 5px 0;
             width: 100%;
@@ -36,13 +33,14 @@
         }
 
         button {
-            background-color: #4caf50;
+            background-color: #007bff;
             color: white;
             cursor: pointer;
+            border: none;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
 
         table {
@@ -65,6 +63,7 @@
             background-color: #f9f9f9;
             text-align: center;
             font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .semestre-container {
@@ -82,9 +81,10 @@
             color: black;
         }
 
-        /* Centrando el texto del encabezado */
         h1, h3 {
             text-align: center;
+            color: #333;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -93,13 +93,12 @@
 <h1>Sistema de Foliación de Programas de Estudio</h1>
 <h3>Selecciona una Carrera :</h3>
 <form id="pdfForm" method="GET" action="{% url 'pdf_to_html' %}">
-     <input type="text" id="nombreDocente" name="nombre_docente" placeholder="Nombre del Decano" required>
+    <input type="text" id="nombreDocente" name="nombre_docente" placeholder="Nombre del Decano" required>
     <input type="text" id="nombreAlumno" name="nombre_alumno" placeholder="Nombre del Alumno" required>
     <input type="text" id="ciAlumno" name="ci_alumno" placeholder="Cédula de Identidad del Alumno" required>
     <input type="text" id="fecha" name="fecha" placeholder="Fecha en letra" required>
 
     <select id="cboCarrera" name="idCarrera" title="Selecciona una carrera">
-
         <option value="" disabled selected>Selecciona una carrera</option>
         <option value="Informatica">Informatica</option>
         <option value="Civil">Civil</option>
@@ -116,6 +115,7 @@
     <button type="submit" id="filtrarBtn">Seleccionar</button>
 </form>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     const listarMaterias = async (codcarrera) => {
@@ -156,10 +156,6 @@
 
                     checkboxContainer.appendChild(tr);
                 });
-                document.getElementById('nombreDocente').value = ''; // Puedes asignar el valor adecuado aquí
-            document.getElementById('nombreAlumno').value = ''; // Puedes asignar el valor adecuado aquí
-            document.getElementById('ciAlumno').value = ''; // Puedes asignar el valor adecuado aquí
-
             } else {
                 checkboxContainer.innerHTML = "<tr><td colspan='5'>Materias no encontradas...</td></tr>";
             }
